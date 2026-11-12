@@ -1,0 +1,50 @@
+name: CI/CD Pipeline
+
+on:
+  pull_request:
+    branches: [ "main", "master" ]
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x, 22.x]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # --- Server Setup & Validation ---
+      - name: Install Server Dependencies
+        run: npm ci
+        working-directory: ./server
+
+      - name: Run Server Syntax Check & Tests
+        run: |
+          npm run check
+          npm test
+        working-directory: ./server
+
+      # --- Client Setup & Validation ---
+      - name: Install Client Dependencies
+        run: npm ci
+        working-directory: ./client
+
+      - name: Run Client Lint
+        run: npm run lint
+        working-directory: ./client
+
+      - name: Build Next.js Client
+        run: npm run build
+        working-directory: ./client
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:5000/api
