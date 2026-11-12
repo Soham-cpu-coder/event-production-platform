@@ -42,6 +42,17 @@ if (env.nodeEnv !== "test") app.use(morgan(env.nodeEnv === "production" ? "combi
 
 app.get("/", (_req, res) => res.json({ success: true, service: "event-production-api", docs: "/api/health" }));
 
+// Immediate health check route that responds even while the database is initializing
+app.get("/api/health", (_req, res) => {
+  const dbStates = ["disconnected", "connected", "connecting", "disconnecting"];
+  const mongoose = require("mongoose");
+  res.json({
+    success: true,
+    status: "ok",
+    database: dbStates[mongoose.connection.readyState] || "unknown",
+  });
+});
+
 app.use("/api", rateLimit({ windowMs: 15 * 60 * 1000, limit: 600, standardHeaders: true, legacyHeaders: false }));
 
 // Lazily connect (and reuse the connection) so the API works both as a long-running server and on serverless.
