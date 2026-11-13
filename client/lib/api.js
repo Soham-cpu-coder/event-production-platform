@@ -48,6 +48,10 @@ export const api = {
 
   createSponsor: (eventId, body) => request(`/events/${eventId}/sponsors`, { method: "POST", body }),
   deleteSponsor: (eventId, id) => request(`/events/${eventId}/sponsors/${id}`, { method: "DELETE" }),
+
+  submitOnboarding: (body) => request("/onboarding", { method: "POST", body, auth: false }),
+  listOnboarding: (query = "") => request(`/onboarding${query}`),
+  updateOnboardingStatus: (id, status) => request(`/onboarding/${id}/status`, { method: "PATCH", body: { status } }),
 };
 
 // Turns an ApiError (including field-level details) into one readable string.

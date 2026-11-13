@@ -32,11 +32,15 @@ h2 { font-size: 1.35rem; margin-top: 2rem; }
 .footer { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 1.5rem 1rem; border-top: 1px solid var(--line); }
 
 .nav { background: var(--surface); border-bottom: 1px solid var(--line); }
-.nav-inner { max-width: 1040px; margin: 0 auto; padding: 0.75rem 1rem; display: flex; align-items: center; gap: 1rem; }
+.nav-inner { max-width: 1040px; margin: 0 auto; padding: 0.75rem 1rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
 .brand { font-weight: 800; font-size: 1.15rem; color: var(--ink); }
 .brand span { color: var(--brand); }
 .spacer { flex: 1; }
 .nav a, .nav button.link { color: var(--ink); font-size: 0.95rem; }
+@media (max-width: 640px) {
+  .nav-inner { gap: 0.5rem 0.85rem; }
+  .nav-inner .spacer { display: none; }
+}
 
 .btn {
   display: inline-block; border: 0; cursor: pointer; font: inherit; font-weight: 600;
@@ -63,6 +67,11 @@ button.link { background: none; border: 0; cursor: pointer; font: inherit; paddi
 .badge.gold { background: #fdf0c8; color: #8a6a00; }
 .badge.silver { background: #eceef2; color: #555d70; }
 .badge.bronze { background: #f6e3d3; color: #8a4b1c; }
+.badge.new { background: #ecebff; color: var(--brand); }
+.badge.contacted { background: #e0f2fe; color: #0284c7; }
+.badge.in-review { background: #fff3d6; color: #8a6100; }
+.badge.onboarded { background: #dff5e9; color: var(--ok); }
+.badge.declined { background: #fdeceb; color: var(--danger); }
 
 .form { display: grid; gap: 0.85rem; max-width: 520px; }
 .form.wide { max-width: none; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
@@ -90,3 +99,27 @@ textarea { min-height: 80px; resize: vertical; }
 .hero p { max-width: 640px; color: var(--muted); font-size: 1.05rem; }
 .stages { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
 .pager { display: flex; gap: 0.5rem; justify-content: center; margin-top: 1.5rem; align-items: center; }
+
+/* Onboarding & Admin Styles */
+.onboarding-page { display: flex; flex-direction: column; gap: 3rem; }
+.onboarding-hero { padding: 2.5rem 1.8rem; background: linear-gradient(135deg, #ffffff 0%, #f4f3ff 100%); border-color: #ddd9fd; }
+.onboarding-section { display: flex; flex-direction: column; gap: 1.25rem; }
+.section-header h2 { margin: 0.35rem 0 0.25rem; font-size: 1.65rem; }
+.section-header p { margin: 0; }
+.process-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.process-card { position: relative; padding: 1.4rem; }
+.process-number { font-size: 1.6rem; font-weight: 800; color: var(--brand); opacity: 0.75; }
+.services-checkbox-grid { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.service-option-card {
+  display: flex; align-items: center; gap: 0.65rem; padding: 0.75rem 1rem;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  cursor: pointer; user-select: none; font-weight: 500; font-size: 0.9rem;
+}
+.service-option-card:hover { border-color: var(--brand); }
+.service-option-card.selected { border-color: var(--brand); background: #f5f4fe; }
+.form-section-title { border-bottom: 1px solid var(--line); padding-bottom: 0.4rem; margin-bottom: 0.2rem; }
+.form-section-title h3 { margin: 0; font-size: 1.1rem; }
+.field-error { color: var(--danger); font-size: 0.8rem; margin-top: 0.2rem; font-weight: 500; }
+.onboarding-success { text-align: center; padding: 3.5rem 1.5rem; }
+.admin-onboarding-container { display: flex; flex-direction: column; }
+.onboarding-admin-card { display: flex; flex-direction: column; gap: 0.75rem; }

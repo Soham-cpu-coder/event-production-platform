@@ -11,7 +11,7 @@ event-production-platform/
 ├── server/                 Express API
 │   └── src/
 │       ├── config/         env validation, DB connection
-│       ├── models/         User, Event, Session, Sponsor (Mongoose)
+│       ├── models/         User, Event, Session, Sponsor, OnboardingRequest (Mongoose)
 │       ├── validators/     Zod schemas for all input
 │       ├── middleware/     auth (JWT + roles), validate, error handling
 │       ├── controllers/    business logic
@@ -22,8 +22,8 @@ event-production-platform/
 │   ├── api/index.js        Vercel serverless entry point (re-exports the Express app)
 │   └── vercel.json         routes every request to api/index.js
 └── client/                 Next.js (App Router)
-    ├── app/                pages: /, /events/[id], /login, /register, /dashboard, /dashboard/events/[id]
-    ├── components/         Navbar, EventCard, Schedule, SponsorList, AuthForm
+    ├── app/                pages: /, /events/[id], /login, /register, /dashboard, /dashboard/events/[id], /onboarding, /dashboard/onboarding
+    ├── components/         Navbar, EventCard, Schedule, SponsorList, AuthForm, onboarding/
     ├── context/            AuthContext
     └── lib/                API client, formatting helpers
 ```
@@ -125,6 +125,9 @@ All routes are under `/api`.
 | PATCH, DELETE | `/events/:id` | event owner or admin |
 | GET | `/events/:eventId/sessions`, `/sponsors` | public |
 | POST, PATCH, DELETE | `/events/:eventId/sessions[/:id]`, `/sponsors[/:id]` | event owner or admin |
+| POST | `/onboarding` | public (rate limited) |
+| GET | `/onboarding` (`?status`, `?page`, `?limit`) | admin |
+| PATCH | `/onboarding/:id/status` | admin |
 
 Responses are JSON: `{ success: true, ... }` on success and `{ success: false, message, details? }` on error.
 

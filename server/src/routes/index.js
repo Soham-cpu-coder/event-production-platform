@@ -9,12 +9,31 @@ const auth = require("../controllers/authController");
 const events = require("../controllers/eventController");
 const sessions = require("../controllers/sessionController");
 const sponsors = require("../controllers/sponsorController");
+const onboarding = require("../controllers/onboardingController");
 
 const router = express.Router();
 const manager = [authenticate, authorize("organizer", "admin")];
 
 // Stricter limit on credential endpoints to slow brute-force attempts.
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, limit: 20, standardHeaders: true, legacyHeaders: false });
+const onboardingLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: "Too many onboarding requests. Please try again later." },
+});
+
+// Honeypot trap: if bot fills honeypot, return 201 without saving or alerting
+const checkHoneypot = (req, res, next) => {
+  if (req.body && req.body.honeypot) {
+    return res.status(201).json({
+      success: true,
+      message: "Onboarding request submitted successfully",
+    });
+  }
+  next();
+};
 
 router.get("/health", (_req, res) => res.json({ success: true, status: "ok" }));
 
@@ -49,5 +68,29 @@ router.get("/events/:eventId/sponsors", validate(s.eventIdParams, "params"), spo
 router.post("/events/:eventId/sponsors", manager, validate(s.eventIdParams, "params"), validate(s.createSponsor), sponsors.create);
 router.patch("/events/:eventId/sponsors/:id", manager, validate(s.eventChildParams, "params"), validate(s.updateSponsor), sponsors.update);
 router.delete("/events/:eventId/sponsors/:id", manager, validate(s.eventChildParams, "params"), sponsors.remove);
+
+// Onboarding requests
+router.post(
+  "/onboarding",
+  onboardingLimiter,
+  checkHoneypot,
+  validate(s.createOnboarding),
+  onboarding.create
+);
+router.get(
+  "/onboarding",
+  authenticate,
+  authorize("admin"),
+  validate(s.listOnboarding, "query"),
+  onboarding.list
+);
+router.patch(
+  "/onboarding/:id/status",
+  authenticate,
+  authorize("admin"),
+  validate(s.idParams, "params"),
+  validate(s.updateOnboardingStatus),
+  onboarding.updateStatus
+);
 
 module.exports = router;

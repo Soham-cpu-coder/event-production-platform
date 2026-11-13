@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { api, errorMessage } from "@/lib/api";
 import EventCard from "@/components/EventCard";
 
@@ -31,6 +32,11 @@ export default function HomePage() {
         <p>
           Browse upcoming multi-day conferences — stages, keynotes, workshops and the sponsors who make them happen.
         </p>
+        <div className="row" style={{ marginTop: "1rem" }}>
+          <Link href="/onboarding" className="btn secondary">
+            Planning an event? Work with us →
+          </Link>
+        </div>
       </section>
 
       {error && <div className="alert error">{error}</div>}

@@ -16,7 +16,9 @@ export default function Navbar() {
           Event<span>Flow</span>
         </Link>
         <Link href="/">Events</Link>
+        <Link href="/onboarding">Get started</Link>
         {canManage && <Link href="/dashboard">Dashboard</Link>}
+        {user?.role === "admin" && <Link href="/dashboard/onboarding">Onboarding</Link>}
         <span className="spacer" />
         {loading ? null : user ? (
           <>

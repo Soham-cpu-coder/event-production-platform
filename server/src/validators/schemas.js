@@ -1,6 +1,13 @@
 const { z } = require("zod");
 const { SESSION_TYPES } = require("../models/Session");
 const { TIERS } = require("../models/Sponsor");
+const {
+  EVENT_TYPES,
+  VENUE_STATUSES,
+  SERVICES,
+  BUDGET_RANGES,
+  STATUSES,
+} = require("../models/OnboardingRequest");
 
 const objectId = z.string().regex(/^[a-f\d]{24}$/i, "Invalid id");
 const date = z.coerce.date();
@@ -91,6 +98,45 @@ const eventChildParams = z.object({ eventId: objectId, id: objectId });
 
 const updateRole = z.object({ role: z.enum(["attendee", "organizer", "admin"]) });
 
+const createOnboarding = z.object({
+  companyName: z.string().trim().min(1, "Company name is required").max(120),
+  contactName: z.string().trim().min(1, "Contact name is required").max(80),
+  email: z.string().trim().toLowerCase().email("Invalid email address"),
+  phone: z.string().trim().max(30).optional().default(""),
+  eventType: z.enum(EVENT_TYPES),
+  expectedAttendees: z.coerce
+    .number()
+    .int()
+    .min(1, "Attendees must be between 1 and 1,000,000")
+    .max(1000000, "Attendees must be between 1 and 1,000,000"),
+  preferredStartDate: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? undefined : val),
+    date.optional()
+  ),
+  durationDays: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? undefined : val),
+    z.coerce.number().int().min(1).max(30).optional()
+  ),
+  venueStatus: z.enum(VENUE_STATUSES),
+  services: z.array(z.enum(SERVICES)).optional().default([]),
+  budgetRange: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined ? undefined : val),
+    z.enum(BUDGET_RANGES).optional()
+  ),
+  notes: z.string().trim().max(2000).optional().default(""),
+  honeypot: z.string().max(0, "Honeypot must be empty").optional().or(z.literal("")),
+});
+
+const updateOnboardingStatus = z.object({
+  status: z.enum(STATUSES),
+});
+
+const listOnboarding = z.object({
+  status: z.enum(STATUSES).optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(20),
+});
+
 module.exports = {
   register,
   login,
@@ -105,4 +151,7 @@ module.exports = {
   eventIdParams,
   eventChildParams,
   updateRole,
+  createOnboarding,
+  updateOnboardingStatus,
+  listOnboarding,
 };
