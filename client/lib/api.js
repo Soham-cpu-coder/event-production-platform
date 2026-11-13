@@ -1,6 +1,11 @@
 function getApiUrl() {
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, "");
+  let url = process.env.NEXT_PUBLIC_API_URL;
+  if (url) {
+    url = url.replace(/\/+$/, "");
+    if (!url.endsWith("/api")) {
+      url += "/api";
+    }
+    return url;
   }
   if (typeof window !== "undefined" && window.location.hostname.endsWith(".vercel.app")) {
     return "https://server-1see.vercel.app/api";

@@ -42,6 +42,15 @@ if (env.nodeEnv !== "test") app.use(morgan(env.nodeEnv === "production" ? "combi
 
 app.get("/", (_req, res) => res.json({ success: true, service: "event-production-api", docs: "/api/health" }));
 
+// Route alias: if a request arrives for standard API routes without /api prefix, normalize it
+const apiPrefixes = ["/events", "/auth", "/users", "/onboarding"];
+app.use((req, _res, next) => {
+  if (apiPrefixes.some((p) => req.url.startsWith(p))) {
+    req.url = `/api${req.url}`;
+  }
+  next();
+});
+
 // Immediate health check route that responds even while the database is initializing
 app.get("/api/health", (_req, res) => {
   const dbStates = ["disconnected", "connected", "connecting", "disconnecting"];
