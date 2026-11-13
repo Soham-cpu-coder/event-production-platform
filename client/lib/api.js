@@ -1,4 +1,16 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+function getApiUrl() {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL.replace(/\/+$/, "");
+  }
+  if (typeof window !== "undefined" && window.location.hostname.endsWith(".vercel.app")) {
+    return "https://server-1see.vercel.app/api";
+  }
+  if (process.env.NODE_ENV === "production") {
+    return "https://server-1see.vercel.app/api";
+  }
+  return "http://localhost:5000/api";
+}
+
 const TOKEN_KEY = "epp_token";
 
 export const tokenStore = {
@@ -20,7 +32,8 @@ async function request(path, { method = "GET", body, auth = true } = {}) {
   const token = auth ? tokenStore.get() : null;
   if (token) headers.Authorization = `Bearer ${token}`;
 
-  const res = await fetch(`${API_URL}${path}`, {
+  const baseUrl = getApiUrl();
+  const res = await fetch(`${baseUrl}${path}`, {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
