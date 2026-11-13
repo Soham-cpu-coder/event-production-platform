@@ -27,7 +27,7 @@ app.use(
       // No Origin header = same-origin / curl / server-to-server.
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes("*") || allowedOrigins.includes(origin)) return callback(null, true);
-      if (process.env.ALLOW_VERCEL_PREVIEWS === "true" && /\.vercel\.app$/.test(origin)) {
+      if (/\.vercel\.app$/.test(origin)) {
         return callback(null, true);
       }
       return callback(null, false);
